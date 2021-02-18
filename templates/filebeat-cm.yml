@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ labels:
+   app: filebeat
+   component: filebeat
+ name: filebeat-sidecar-config
+data:
+  filebeat.yml: |
+    filebeat:
+      config:
+        modules:
+          path: /usr/share/filebeat/modules.d/*.yml
+          reload:
+            enabled: true
+      modules:
+      - module: nginx
+        access:
+          enabled: true
+          var.paths:
+          - "/var/log/nginx/access.log"
+        error:
+          enabled: true
+          var.paths:
+          - "/var/log/nginx/error.log"
+    output.logstash:
+      hosts:
+        - koivu-in1.wood.csc.fi:5044
+        - koivu-in2.wood.csc.fi:5044
+      ssl.enabled: true
+    processors:
+      - add_fields:
+          target: log_team_meta
+          fields:
+            project_name: project_XXXYYYY-test

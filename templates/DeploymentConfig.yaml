@@ -2,13 +2,13 @@ apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
   labels:
-    app: python-and-sidecar
-  name: python-and-sidecar
+    app: nginx-okd
+  name: nginx-okd
 spec:
   replicas: 1
   selector:
-    app: python-and-sidecar
-    deploymentconfig: python-and-sidecar
+    app: nginx-okd
+    deploymentconfig: nginx-okd
   strategy:
     activeDeadlineSeconds: 21600
     resources: {}
@@ -22,37 +22,59 @@ spec:
   template:
     metadata:
       labels:
-        app: python-and-sidecar
-        deploymentconfig: python-and-sidecar
+        app: nginx-okd
+        deploymentconfig: nginx-okd
     spec:
       containers:
-      - image: cscfi/nginx-sidecar:latest
+      - image: lvarin/nginx-okd:latest
         imagePullPolicy: Always
-        name: nginx
+        name: nginx-okd
+        volumeMounts:
+        - mountPath: /var/log/nginx
+          name: logs
         ports:
+        - containerPort: 80
+          protocol: TCP
         - containerPort: 8081
           protocol: TCP
         resources:
           limits:
             cpu: 500m
-            memory: 1Gi
+            memory: 500Mi
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
-      - image: cscfi/hello-world-opensift:latest
-        imagePullPolicy: Always
-        name: python
+      - image: lvarin/filebeat-okd:latest
+#        imagePullPolicy: Always
+        name: filebeat
+        volumeMounts:
+        - mountPath: /var/log/nginx
+          name: logs
+        - mountPath: /usr/share/filebeat/filebeat.yml
+          subPath: filebeat.yml
+          name: filebeat-sidecar-config
         ports:
         - containerPort: 8080
           protocol: TCP
         resources:
           limits:
-            cpu: 1500m
-            memory: 7Gi
+            cpu: 500m
+            memory: 500Mi
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
+      volumes:
+      - name: logs
+        emptyDir: {}
+      - name: filebeat-sidecar-config
+        configMap:
+          defaultMode: 420
+          items:
+          - key: filebeat.yml
+            path: filebeat.yml
+          name: filebeat-sidecar-config
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
   test: false
+status: {}
