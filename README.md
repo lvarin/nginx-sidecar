@@ -14,5 +14,5 @@ oc create route edge sidecar --service=nginx-okd  --insecure-policy='Redirect'
 oc get route sidecar
 ```
 
-Log in [Koivu](https://koivu.wood.csc.fi/) and select the same project that you filled up. You will see the log entries from the `nginx` container you set up in `templates/DeploymentConfig.yaml`. Any furherdevelopment, you may check <https://wiki.csc.fi/CentralisedLogging/UserGettingStarted>.
+Log in [Koivu](https://koivu.wood.csc.fi/) and select the same project that you filled up. You will see the log entries from the `nginx` container you set up in `templates/DeploymentConfig.yaml`. Any furher development, you may check <https://wiki.csc.fi/Observability/Logging/UserGettingStarted>.
 
