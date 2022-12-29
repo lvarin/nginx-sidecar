@@ -16,3 +16,4 @@ oc get route sidecar
 
 Log in [Koivu](https://koivu.wood.csc.fi/) and select the same project that you filled up. You will see the log entries from the `nginx` container you set up in `templates/DeploymentConfig.yaml`. Any furher development, you may check <https://wiki.csc.fi/Observability/Logging/UserGettingStarted>.
 
+**Note**: The DeploymentConfig uses a [filebeat-okd custom image](https://github.com/lvarin/filebeat-okd). This image givesmore permissions to the `root` **group** as this was developed and tested for OpenShift.
